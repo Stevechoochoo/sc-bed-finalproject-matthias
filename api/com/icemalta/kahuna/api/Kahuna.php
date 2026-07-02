@@ -53,6 +53,26 @@ $endpoints["user"] = function (array $requestData): void {
     sendResponse(data: $user, code: 201);
 };
 
+$endpoints["login"] = function (array $requestData): void {
+    $email = $requestData['email'];
+    $password = $requestData['password'];
+    $user = new User(email: $email, password: $password);
+    $user = User::authenticate($user);
+
+    if ($user) {
+        // Login ok
+        $token = str_replace("=", "", base64_encode(random_bytes(160 / 8)));
+        User::saveToken($user, $token);
+        sendResponse(data: [
+            'user' => $user->getId(),
+            'token' => $token
+        ]);
+    } else {
+        // Login failed
+        sendResponse(code: 401, error: 'Login failed.');
+    }
+};
+
 $endpoints["404"] = function (array $requestData): void {
     sendResponse(null, 404, "Endpoint " . $requestData["endPoint"] . " not found.");
 };

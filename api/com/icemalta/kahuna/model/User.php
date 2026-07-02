@@ -2,6 +2,7 @@
 namespace com\icemalta\kahuna\model;
 
 use \JsonSerializable;
+use \PDO;
 
 class User implements JsonSerializable
 {
@@ -42,6 +43,37 @@ class User implements JsonSerializable
         }
 
         return $user;
+    }
+
+    public static function authenticate(User $user): ?User
+    {
+        $sql = 'SELECT * FROM Users WHERE email = :email';
+        $sth = self::$db->prepare($sql);
+        $sth->bindValue('email', $user->email);
+        $sth->execute();
+
+        $result = $sth->fetch(PDO::FETCH_OBJ);
+        if ($result && password_verify($user->password, $result->password)) {
+            return new User(
+                name: $result->name,
+                surname: $result->surname,
+                email: $result->email,
+                password: $result->password,
+                role: $result->role,
+                id: $result->user_id
+            );
+        }
+        return null;
+    }
+
+    public static function saveToken(User $user, string $token): bool
+    {
+        $sql = 'UPDATE Users SET token = :token WHERE user_id = :id';
+        $sth = self::$db->prepare($sql);
+        $sth->bindValue('token', $token);
+        $sth->bindValue('id', $user->getId());
+        $sth->execute();
+        return $sth->rowCount() > 0;
     }
 
     public function jsonSerialize(): array

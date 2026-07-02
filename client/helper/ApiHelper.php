@@ -1,5 +1,5 @@
 <?php
-namespace com\icemalta\jobapp\client\helper;
+namespace com\icemalta\kahuna\client\helper;
 
 class ApiHelper
 {

@@ -1,5 +1,5 @@
 <?php
-namespace com\icemalta\jobapp\client\controller;
+namespace com\icemalta\kahuna\client\controller;
 
 class Controller
 {

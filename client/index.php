@@ -1,11 +1,12 @@
 <?php
-namespace com\icemalta\jobapp\client;
+namespace com\icemalta\kahuna\client;
 
-use com\icemalta\jobapp\client\controller\RouteController;
-use com\icemalta\jobapp\client\helper\ApiHelper;
+use com\icemalta\kahuna\client\controller\RouteController;
+use com\icemalta\kahuna\client\helper\ApiHelper;
 
 require 'controller/Controller.php';
 require 'controller/UserController.php';
+require 'controller/AuthController.php';
 require 'controller/RouteController.php';
 require 'helper/ApiHelper.php';
 
@@ -14,6 +15,10 @@ $requestData = ApiHelper::getRequestData();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === '/action/register') {
 	RouteController::actionRegister([], $requestData);
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === '/action/login') {
+	RouteController::actionLogin([], $requestData);
+} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $path === '/login') {
+	RouteController::viewLogin([], $requestData);
 } elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && ($path === '/' || $path === '/register')) {
 	RouteController::viewRegister([], $requestData);
 } else {
