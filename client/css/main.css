@@ -1,0 +1,13 @@
+.card {
+    margin: 20px auto 20px auto;
+}
+.alert {
+    margin-top: 20px;
+}
+main.card {
+    max-width: 520px;
+    width: 100%;
+}
+.form-floating {
+    margin-bottom: 12px;
+}

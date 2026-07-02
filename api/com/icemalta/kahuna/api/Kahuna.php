@@ -1,10 +1,10 @@
 <?php
-require 'com/icemalta/kahuna/util/ApiUtil.php';
-use com\icemalta\kahuna\util\ApiUtil;
+require 'com/icemalta/kahuna/model/DBConnect.php';
+require 'com/icemalta/kahuna/model/User.php';
+use com\icemalta\kahuna\model\User;
 
 cors();
 
-$endPoints = [];
 $requestData = [];
 header("Content-Type: application/json; charset=UTF-8");
 
@@ -26,46 +26,34 @@ function sendResponse(mixed $data = null, int $code = 200, mixed $error = null):
 /* Get Request Data */
 $requestMethod = $_SERVER['REQUEST_METHOD'];
 switch ($requestMethod) {
-    case 'GET':
-        $requestData = $_GET;
-        break;
     case 'POST':
         $requestData = $_POST;
         break;
-    case 'PATCH':
-        parse_str(file_get_contents('php://input'), $requestData);
-        ApiUtil::parse_raw_http_request($requestData);
-        $requestData = is_array($requestData) ? $requestData : [];
-        break;
-    case 'DELETE':
-        break;
     default:
         sendResponse(null, 405, 'Method not allowed.');
+        exit;
 }
 
 /* Extract EndPoint */
 $parsedURI = parse_url($_SERVER["REQUEST_URI"]);
 $path = explode('/', str_replace($BASE_URI, "", $parsedURI["path"]));
 $endPoint = $path[0];
-$requestData['dataId'] = isset($path[1]) ? $path[1] : null;
 if (empty($endPoint)) {
     $endPoint = "/";
 }
 
-/* Extract Token */
-if (isset($_SERVER["HTTP_X_API_KEY"])) {
-    $requestData["user"] = $_SERVER["HTTP_X_API_USER"];
-}
-if (isset($_SERVER["HTTP_X_API_KEY"])) {
-    $requestData["token"] = $_SERVER["HTTP_X_API_KEY"];
-}
-
 /* EndPoint Handlers */
-$endpoints["/"] = function (string $requestMethod, array $requestData): void {
-    sendResponse('Welcome to Kahuna API!');
+$endpoints["user"] = function (array $requestData): void {
+    $name = $requestData['name'];
+    $surname = $requestData['surname'];
+    $email = $requestData['email'];
+    $password = $requestData['password'];
+    $user = new User(name: $name, surname: $surname, email: $email, password: $password);
+    $user = User::save($user);
+    sendResponse(data: $user, code: 201);
 };
 
-$endpoints["404"] = function (string $requestMethod, array $requestData): void {
+$endpoints["404"] = function (array $requestData): void {
     sendResponse(null, 404, "Endpoint " . $requestData["endPoint"] . " not found.");
 };
 
@@ -85,7 +73,7 @@ function cors()
 
         if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']))
             // may also be using PUT, PATCH, HEAD etc
-            header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PATCH, DELETE");
+            header("Access-Control-Allow-Methods: POST, OPTIONS");
 
         if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
             header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
@@ -96,9 +84,9 @@ function cors()
 
 try {
     if (isset($endpoints[$endPoint])) {
-        $endpoints[$endPoint]($requestMethod, $requestData);
+        $endpoints[$endPoint]($requestData);
     } else {
-        $endpoints["404"]($requestMethod, array("endPoint" => $endPoint));
+        $endpoints["404"](array("endPoint" => $endPoint));
     }
 } catch (Exception $e) {
     sendResponse(null, 500, $e->getMessage());

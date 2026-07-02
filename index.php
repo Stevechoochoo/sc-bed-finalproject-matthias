@@ -1,3 +1,3 @@
 <?php
-header("Location: /api/index.php");
-exit;
+chdir(__DIR__ . '/client');
+require 'index.php';
