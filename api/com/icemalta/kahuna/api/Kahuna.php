@@ -1,7 +1,9 @@
 <?php
 require 'com/icemalta/kahuna/model/DBConnect.php';
 require 'com/icemalta/kahuna/model/User.php';
+require 'com/icemalta/kahuna/model/Product.php';
 use com\icemalta\kahuna\model\User;
+use com\icemalta\kahuna\model\Product;
 
 cors();
 
@@ -96,6 +98,41 @@ $endpoints["login"] = function (string $requestMethod, array $requestData): void
     } else {
         // Login failed
         sendResponse(code: 401, error: 'Login failed.');
+    }
+};
+
+$endpoints["product"] = function (string $requestMethod, array $requestData): void {
+    if ($requestMethod === 'GET') {
+        if (isset($requestData['api_user'], $requestData['api_token']) && User::verifyToken($requestData['api_user'], $requestData['api_token'])) {
+            $products = Product::getAll();
+            sendResponse(data: $products);
+        } else {
+            sendResponse(code: 403, error: 'Missing, invalid or expired token.');
+        }
+        return;
+    }
+
+    if ($requestMethod !== 'POST') {
+        sendResponse(null, 405, 'Method not allowed.');
+        return;
+    }
+
+    if (isset($requestData['api_user'], $requestData['api_token']) && User::verifyToken($requestData['api_user'], $requestData['api_token'])) {
+        $serialNumber = $requestData['serial_number'];
+        $purchaseDate = $requestData['purchase_date'];
+        $product = new Product(serialNumber: $serialNumber);
+        $product = Product::getBySerialNumber($product);
+
+        if ($product) {
+            $user = new User(id: $requestData['api_user']);
+            $product->setPurchaseDate($purchaseDate);
+            $product = Product::register($user, $product);
+            sendResponse(data: $product, code: 201);
+        } else {
+            sendResponse(code: 404, error: 'Product serial number not found.');
+        }
+    } else {
+        sendResponse(code: 403, error: 'Missing, invalid or expired token.');
     }
 };
 

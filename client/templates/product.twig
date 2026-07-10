@@ -1,0 +1,32 @@
+<?php include __DIR__ . '/header.twig'; ?>
+<?php include __DIR__ . '/menu.twig'; ?>
+    <div class="container d-flex flex-column py-4">
+        <main class="w-80 m-auto card">
+            <div class="card-body">
+            <form id="productForm" method="POST" action="/action/product">
+                <h1 class="h3 mb-3 fw-normal">Register product.</h1>
+                <?php if (isset($params['success'])) { ?>
+                    <div class="alert alert-success"><?php echo htmlspecialchars($params['success']); ?></div>
+                <?php } ?>
+                <?php if (isset($params['error'])) { ?>
+                    <div class="alert alert-danger"><?php echo htmlspecialchars($params['error']); ?></div>
+                <?php } ?>
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="serial_number" name="serial_number" placeholder="Serial Number" list="serialNumbers" required>
+                    <label for="serial_number">Serial Number</label>
+                    <datalist id="serialNumbers">
+                        <?php foreach ($params['products'] ?? [] as $product) { ?>
+                        <option value="<?php echo htmlspecialchars($product->serialNumber); ?>">
+                        <?php } ?>
+                    </datalist>
+                </div>
+                <div class="form-floating">
+                    <input type="date" class="form-control" id="purchase_date" name="purchase_date" placeholder="Purchase Date" required>
+                    <label for="purchase_date">Purchase Date</label>
+                </div>
+                <button class="btn btn-primary w-100 py-2" type="submit">Register Product</button>
+            </form>
+            </div>
+        </main>
+    </div>
+<?php include __DIR__ . '/footer.twig'; ?>
