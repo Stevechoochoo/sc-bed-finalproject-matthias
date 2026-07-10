@@ -76,6 +76,28 @@ class User implements JsonSerializable
         return $sth->rowCount() > 0;
     }
 
+    public static function verifyToken(int $userId, string $token): bool
+    {
+        self::$db = DBConnect::getInstance()->getConnection();
+        $sql = 'SELECT * FROM Users WHERE user_id = :id AND token = :token';
+        $sth = self::$db->prepare($sql);
+        $sth->bindValue('id', $userId);
+        $sth->bindValue('token', $token);
+        $sth->execute();
+        return (bool) $sth->fetch(PDO::FETCH_OBJ);
+    }
+
+    public static function getInfo(User $user): object
+    {
+        self::$db = DBConnect::getInstance()->getConnection();
+        $sql = 'SELECT user_id, name, surname, email, role FROM Users WHERE user_id = :id';
+        $sth = self::$db->prepare($sql);
+        $sth->bindValue('id', $user->getId());
+        $sth->execute();
+        $result = $sth->fetch(PDO::FETCH_OBJ);
+        return $result;
+    }
+
     public function jsonSerialize(): array
     {
         return [

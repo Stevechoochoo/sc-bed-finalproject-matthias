@@ -21,6 +21,14 @@ class Controller
                 break;
         }
 
+        // Headers
+        if (isset($data['api_user']) && isset($data['api_token'])) {
+            curl_setopt($curl, CURLOPT_HTTPHEADER, [
+                "X-Api-Key: {$data['api_token']}",
+                "X-Api-User: {$data['api_user']}"
+            ]);    
+        }
+
         $response = curl_exec($curl);
         curl_close($curl);
         return $response;

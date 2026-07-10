@@ -26,6 +26,9 @@ function sendResponse(mixed $data = null, int $code = 200, mixed $error = null):
 /* Get Request Data */
 $requestMethod = $_SERVER['REQUEST_METHOD'];
 switch ($requestMethod) {
+    case 'GET':
+        $requestData = $_GET;
+        break;
     case 'POST':
         $requestData = $_POST;
         break;
@@ -42,8 +45,26 @@ if (empty($endPoint)) {
     $endPoint = "/";
 }
 
+if (isset($_SERVER["HTTP_X_API_USER"])) {
+    $requestData["api_user"] = $_SERVER["HTTP_X_API_USER"];
+}
+if (isset($_SERVER["HTTP_X_API_KEY"])) {
+    $requestData["api_token"] = $_SERVER["HTTP_X_API_KEY"];
+}
+
 /* EndPoint Handlers */
-$endpoints["user"] = function (array $requestData): void {
+$endpoints["user"] = function (string $requestMethod, array $requestData): void {
+    if ($requestMethod === 'GET') {
+        if (isset($requestData['api_user'], $requestData['api_token']) && User::verifyToken($requestData['api_user'], $requestData['api_token'])) {
+            $user = new User(id: $requestData['api_user']);
+            $userInfo = User::getInfo($user);
+            sendResponse(data: $userInfo);
+        } else {
+            sendResponse(code: 403, error: 'Missing, invalid or expired token.');
+        }
+        return;
+    }
+
     $name = $requestData['name'];
     $surname = $requestData['surname'];
     $email = $requestData['email'];
@@ -53,7 +74,12 @@ $endpoints["user"] = function (array $requestData): void {
     sendResponse(data: $user, code: 201);
 };
 
-$endpoints["login"] = function (array $requestData): void {
+$endpoints["login"] = function (string $requestMethod, array $requestData): void {
+    if ($requestMethod !== 'POST') {
+        sendResponse(null, 405, 'Method not allowed.');
+        return;
+    }
+
     $email = $requestData['email'];
     $password = $requestData['password'];
     $user = new User(email: $email, password: $password);
@@ -73,7 +99,7 @@ $endpoints["login"] = function (array $requestData): void {
     }
 };
 
-$endpoints["404"] = function (array $requestData): void {
+$endpoints["404"] = function (string $requestMethod, array $requestData): void {
     sendResponse(null, 404, "Endpoint " . $requestData["endPoint"] . " not found.");
 };
 
@@ -93,7 +119,7 @@ function cors()
 
         if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']))
             // may also be using PUT, PATCH, HEAD etc
-            header("Access-Control-Allow-Methods: POST, OPTIONS");
+            header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 
         if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
             header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
@@ -104,9 +130,9 @@ function cors()
 
 try {
     if (isset($endpoints[$endPoint])) {
-        $endpoints[$endPoint]($requestData);
+        $endpoints[$endPoint]($requestMethod, $requestData);
     } else {
-        $endpoints["404"](array("endPoint" => $endPoint));
+        $endpoints["404"]($requestMethod, array("endPoint" => $endPoint));
     }
 } catch (Exception $e) {
     sendResponse(null, 500, $e->getMessage());
