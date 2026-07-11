@@ -43,6 +43,17 @@ class Product implements JsonSerializable
         return $products;
     }
 
+    public static function getRegistered(User $user): array
+    {
+        self::$db = DBConnect::getInstance()->getConnection();
+        $sql = 'SELECT Products.serial_number, Products.product_name, Products.warranty, RegisteredProducts.purchase_date, Products.product_id FROM RegisteredProducts INNER JOIN Products ON RegisteredProducts.product_id = Products.product_id WHERE RegisteredProducts.user_id = :userId';
+        $sth = self::$db->prepare($sql);
+        $sth->bindValue('userId', $user->getId());
+        $sth->execute();
+        $products = $sth->fetchAll(PDO::FETCH_FUNC, fn(...$fields) => new Product(...$fields));
+        return $products;
+    }
+
     public static function register(User $user, Product $product): Product
     {
         $sql = 'INSERT INTO RegisteredProducts(user_id, product_id, purchase_date) VALUES (:userId, :productId, :purchaseDate)';

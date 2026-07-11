@@ -12,6 +12,15 @@ class ProductController extends Controller
         return json_decode(self::req('GET', '/product', $payload));
     }
 
+    public static function getRegistered(array $params, array $data): object
+    {
+        $payload = [
+            'api_user' => $_SESSION['api_user'],
+            'api_token' => $_SESSION['api_token']
+        ];
+        return json_decode(self::req('GET', '/registered-products', $payload));
+    }
+
     public static function register(array $params, array $data): object
     {
         $payload = [

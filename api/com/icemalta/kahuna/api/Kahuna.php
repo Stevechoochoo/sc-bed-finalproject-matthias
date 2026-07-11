@@ -136,6 +136,21 @@ $endpoints["product"] = function (string $requestMethod, array $requestData): vo
     }
 };
 
+$endpoints["registered-products"] = function (string $requestMethod, array $requestData): void {
+    if ($requestMethod !== 'GET') {
+        sendResponse(null, 405, 'Method not allowed.');
+        return;
+    }
+
+    if (isset($requestData['api_user'], $requestData['api_token']) && User::verifyToken($requestData['api_user'], $requestData['api_token'])) {
+        $user = new User(id: $requestData['api_user']);
+        $products = Product::getRegistered($user);
+        sendResponse(data: $products);
+    } else {
+        sendResponse(code: 403, error: 'Missing, invalid or expired token.');
+    }
+};
+
 $endpoints["404"] = function (string $requestMethod, array $requestData): void {
     sendResponse(null, 404, "Endpoint " . $requestData["endPoint"] . " not found.");
 };

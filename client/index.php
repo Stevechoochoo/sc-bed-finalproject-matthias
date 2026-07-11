@@ -26,6 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === '/action/register') {
 	RouteController::viewLogin([], $requestData);
 } elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $path === '/product') {
 	RouteController::viewProduct([], $requestData);
+} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $path === '/products') {
+	RouteController::viewProducts([], $requestData);
 } elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && ($path === '/' || $path === '/register')) {
 	RouteController::viewRegister([], $requestData);
 } else {

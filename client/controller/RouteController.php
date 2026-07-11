@@ -30,6 +30,19 @@ class RouteController extends Controller
         }
     }
 
+    public static function viewProducts(array $params, array $data): void
+    {
+        if (isset($_SESSION['api_user'], $_SESSION['api_token'])) {
+            $products = ProductController::getRegistered($params, $data);
+            if (isset($products->data)) {
+                $params['products'] = $products->data;
+            }
+            self::showView('products', $params);
+        } else {
+            self::showView('login', ['error' => 'Please login first.']);
+        }
+    }
+
     public static function actionRegister(array $params, array $data): void
     {
         $result = UserController::register($params, $data);

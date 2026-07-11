@@ -1,0 +1,37 @@
+<?php include __DIR__ . '/header.twig'; ?>
+<?php include __DIR__ . '/menu.twig'; ?>
+    <div class="container d-flex flex-column py-4">
+        <main class="w-80 m-auto card">
+            <div class="card-body">
+                <h1 class="h3 mb-3 fw-normal">Registered products.</h1>
+                <?php if (isset($params['error'])) { ?>
+                    <div class="alert alert-danger"><?php echo htmlspecialchars($params['error']); ?></div>
+                <?php } ?>
+                <?php if (empty($params['products'])) { ?>
+                    <p>No products registered.</p>
+                <?php } else { ?>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Serial Number</th>
+                                <th>Product</th>
+                                <th>Warranty</th>
+                                <th>Purchase Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($params['products'] as $product) { ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($product->serialNumber); ?></td>
+                                <td><?php echo htmlspecialchars($product->productName); ?></td>
+                                <td><?php echo htmlspecialchars($product->warranty); ?></td>
+                                <td><?php echo htmlspecialchars($product->purchaseDate); ?></td>
+                            </tr>
+                            <?php } ?>
+                        </tbody>
+                    </table>
+                <?php } ?>
+            </div>
+        </main>
+    </div>
+<?php include __DIR__ . '/footer.twig'; ?>
