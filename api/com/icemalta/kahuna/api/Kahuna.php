@@ -151,6 +151,30 @@ $endpoints["registered-products"] = function (string $requestMethod, array $requ
     }
 };
 
+$endpoints["registered-product"] = function (string $requestMethod, array $requestData): void {
+    if ($requestMethod !== 'GET') {
+        sendResponse(null, 405, 'Method not allowed.');
+        return;
+    }
+
+    if (isset($requestData['api_user'], $requestData['api_token']) && User::verifyToken($requestData['api_user'], $requestData['api_token'])) {
+        if (!isset($requestData['serial_number'])) {
+            sendResponse(code: 400, error: 'Missing serial number.');
+            return;
+        }
+        $user = new User(id: $requestData['api_user']);
+        $product = new Product(serialNumber: $requestData['serial_number']);
+        $product = Product::getRegisteredBySerialNumber($user, $product);
+        if ($product) {
+            sendResponse(data: $product);
+        } else {
+            sendResponse(code: 404, error: 'Registered product not found.');
+        }
+    } else {
+        sendResponse(code: 403, error: 'Missing, invalid or expired token.');
+    }
+};
+
 $endpoints["404"] = function (string $requestMethod, array $requestData): void {
     sendResponse(null, 404, "Endpoint " . $requestData["endPoint"] . " not found.");
 };

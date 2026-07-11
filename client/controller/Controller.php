@@ -8,6 +8,9 @@ class Controller
     {   
         // Build URL
         $url = self::BASE_URL . $endpoint;
+        if ($method === 'GET' && !empty($data)) {
+            $url .= '?' . http_build_query($data);
+        }
 
         // Set cURL options
         $curl = curl_init($url);

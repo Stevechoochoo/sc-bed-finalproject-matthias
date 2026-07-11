@@ -43,6 +43,15 @@ class RouteController extends Controller
         }
     }
 
+    public static function viewProductDetails(array $params, array $data): void
+    {
+        if (isset($_SESSION['api_user'], $_SESSION['api_token'])) {
+            self::showView('product-details', $params);
+        } else {
+            self::showView('login', ['error' => 'Please login first.']);
+        }
+    }
+
     public static function actionRegister(array $params, array $data): void
     {
         $result = UserController::register($params, $data);
@@ -73,6 +82,20 @@ class RouteController extends Controller
                 self::viewProduct(['success' => 'Product registered successfully.'], $data);
             } else {
                 self::viewProduct(['error' => 'Product registration failed. Please try again.'], $data);
+            }
+        } else {
+            self::showView('login', ['error' => 'Please login first.']);
+        }
+    }
+
+    public static function actionProductDetails(array $params, array $data): void
+    {
+        if (isset($_SESSION['api_user'], $_SESSION['api_token'])) {
+            $result = ProductController::getRegisteredProduct($params, $data);
+            if (isset($result->data)) {
+                self::showView('product-details', ['product' => $result->data]);
+            } else {
+                self::showView('product-details', ['error' => 'Product not found.']);
             }
         } else {
             self::showView('login', ['error' => 'Please login first.']);

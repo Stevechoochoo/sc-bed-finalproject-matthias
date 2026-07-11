@@ -12,14 +12,16 @@ class Product implements JsonSerializable
     private ?string $productName;
     private ?int $warranty;
     private ?string $purchaseDate;
+    private ?int $warrantyLeft;
 
-    public function __construct(?string $serialNumber = null, ?string $productName = null, ?int $warranty = 0, ?string $purchaseDate = null, ?int $id = 0)
+    public function __construct(?string $serialNumber = null, ?string $productName = null, ?int $warranty = 0, ?string $purchaseDate = null, ?int $id = 0, ?int $warrantyLeft = null)
     {
         $this->serialNumber = $serialNumber;
         $this->productName = $productName;
         $this->warranty = $warranty;
         $this->purchaseDate = $purchaseDate;
         $this->id = $id;
+        $this->warrantyLeft = $warrantyLeft;
         self::$db = DBConnect::getInstance()->getConnection();
     }
 
@@ -51,7 +53,26 @@ class Product implements JsonSerializable
         $sth->bindValue('userId', $user->getId());
         $sth->execute();
         $products = $sth->fetchAll(PDO::FETCH_FUNC, fn(...$fields) => new Product(...$fields));
+        foreach ($products as $product) {
+            $product->setWarrantyLeft($product->calculateWarrantyLeft());
+        }
         return $products;
+    }
+
+    public static function getRegisteredBySerialNumber(User $user, Product $product): Product|array
+    {
+        self::$db = DBConnect::getInstance()->getConnection();
+        $sql = 'SELECT Products.serial_number, Products.product_name, Products.warranty, RegisteredProducts.purchase_date, Products.product_id FROM RegisteredProducts INNER JOIN Products ON RegisteredProducts.product_id = Products.product_id WHERE RegisteredProducts.user_id = :userId AND Products.serial_number = :serialNumber';
+        $sth = self::$db->prepare($sql);
+        $sth->bindValue('userId', $user->getId());
+        $sth->bindValue('serialNumber', $product->getSerialNumber());
+        $sth->execute();
+        $products = $sth->fetchAll(PDO::FETCH_FUNC, fn(...$fields) => new Product(...$fields));
+        if (count($products) > 0) {
+            $products[0]->setWarrantyLeft($products[0]->calculateWarrantyLeft());
+            return $products[0];
+        }
+        return [];
     }
 
     public static function register(User $user, Product $product): Product
@@ -124,5 +145,30 @@ class Product implements JsonSerializable
     {
         $this->purchaseDate = $purchaseDate;
         return $this;
+    }
+
+    public function getWarrantyLeft(): ?int
+    {
+        return $this->warrantyLeft;
+    }
+
+    public function setWarrantyLeft(int $warrantyLeft): self
+    {
+        $this->warrantyLeft = $warrantyLeft;
+        return $this;
+    }
+
+    public function calculateWarrantyLeft(): int
+    {
+        $purchaseDate = new \DateTime($this->purchaseDate);
+        $expiryDate = clone $purchaseDate;
+        $expiryDate->modify("+{$this->warranty} years");
+        $today = new \DateTime();
+
+        if ($today > $expiryDate) {
+            return 0;
+        }
+
+        return $today->diff($expiryDate)->days;
     }
 }

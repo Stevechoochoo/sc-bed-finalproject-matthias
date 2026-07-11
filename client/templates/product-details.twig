@@ -1,0 +1,42 @@
+<?php include __DIR__ . '/header.twig'; ?>
+<?php include __DIR__ . '/menu.twig'; ?>
+    <div class="container d-flex flex-column py-4">
+        <main class="w-80 m-auto card">
+            <div class="card-body">
+            <form id="productDetailsForm" method="POST" action="/action/product-details">
+                <h1 class="h3 mb-3 fw-normal">View product.</h1>
+                <?php if (isset($params['error'])) { ?>
+                    <div class="alert alert-danger"><?php echo htmlspecialchars($params['error']); ?></div>
+                <?php } ?>
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="serial_number" name="serial_number" placeholder="Serial Number" required>
+                    <label for="serial_number">Serial Number</label>
+                </div>
+                <button class="btn btn-primary w-100 py-2" type="submit">View Product</button>
+            </form>
+            <?php if (isset($params['product'])) { ?>
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th>Serial Number</th>
+                            <td><?php echo htmlspecialchars($params['product']->serialNumber); ?></td>
+                        </tr>
+                        <tr>
+                            <th>Product</th>
+                            <td><?php echo htmlspecialchars($params['product']->productName); ?></td>
+                        </tr>
+                        <tr>
+                            <th>Purchase Date</th>
+                            <td><?php echo htmlspecialchars($params['product']->purchaseDate); ?></td>
+                        </tr>
+                        <tr>
+                            <th>Warranty Left</th>
+                            <td><?php echo htmlspecialchars($params['product']->warrantyLeft); ?> days</td>
+                        </tr>
+                    </tbody>
+                </table>
+            <?php } ?>
+            </div>
+        </main>
+    </div>
+<?php include __DIR__ . '/footer.twig'; ?>
