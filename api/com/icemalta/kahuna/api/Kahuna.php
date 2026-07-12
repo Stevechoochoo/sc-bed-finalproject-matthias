@@ -101,6 +101,21 @@ $endpoints["login"] = function (string $requestMethod, array $requestData): void
     }
 };
 
+$endpoints["logout"] = function (string $requestMethod, array $requestData): void {
+    if ($requestMethod !== 'POST') {
+        sendResponse(null, 405, 'Method not allowed.');
+        return;
+    }
+
+    if (isset($requestData['api_user'], $requestData['api_token']) && User::verifyToken($requestData['api_user'], $requestData['api_token'])) {
+        $user = new User(id: $requestData['api_user']);
+        User::deleteToken($user);
+        sendResponse(data: ['message' => 'Logout succeeded.']);
+    } else {
+        sendResponse(code: 403, error: 'Missing, invalid or expired token.');
+    }
+};
+
 $endpoints["product"] = function (string $requestMethod, array $requestData): void {
     if ($requestMethod === 'GET') {
         if (isset($requestData['api_user'], $requestData['api_token']) && User::verifyToken($requestData['api_user'], $requestData['api_token'])) {

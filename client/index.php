@@ -26,6 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === '/action/register') {
 	RouteController::actionProductDetails([], $requestData);
 } elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $path === '/login') {
 	RouteController::viewLogin([], $requestData);
+} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $path === '/logout') {
+	RouteController::actionLogout([], $requestData);
 } elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $path === '/product') {
 	RouteController::viewProduct([], $requestData);
 } elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $path === '/products') {

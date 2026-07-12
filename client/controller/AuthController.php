@@ -11,4 +11,13 @@ class AuthController extends Controller
         ];
         return json_decode(self::req('POST', '/login', $payload));
     }
+
+    public static function logout($params, $data): object
+    {
+        $payload = [
+            'api_user' => $_SESSION['api_user'],
+            'api_token' => $_SESSION['api_token']
+        ];
+        return json_decode(self::req('POST', '/logout', $payload));
+    }
 }

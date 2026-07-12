@@ -74,6 +74,16 @@ class RouteController extends Controller
         }
     }
 
+    public static function actionLogout(array $params, array $data): void
+    {
+        if (isset($_SESSION['api_user'], $_SESSION['api_token'])) {
+            AuthController::logout($params, $data);
+        }
+        unset($_SESSION['api_user']);
+        unset($_SESSION['api_token']);
+        self::showView('login', ['success' => 'Logout succeeded.']);
+    }
+
     public static function actionProduct(array $params, array $data): void
     {
         if (isset($_SESSION['api_user'], $_SESSION['api_token'])) {

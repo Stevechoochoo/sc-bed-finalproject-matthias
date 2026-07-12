@@ -87,6 +87,16 @@ class User implements JsonSerializable
         return (bool) $sth->fetch(PDO::FETCH_OBJ);
     }
 
+    public static function deleteToken(User $user): bool
+    {
+        self::$db = DBConnect::getInstance()->getConnection();
+        $sql = 'UPDATE Users SET token = NULL WHERE user_id = :id';
+        $sth = self::$db->prepare($sql);
+        $sth->bindValue('id', $user->getId());
+        $sth->execute();
+        return $sth->rowCount() > 0;
+    }
+
     public static function getInfo(User $user): object
     {
         self::$db = DBConnect::getInstance()->getConnection();
