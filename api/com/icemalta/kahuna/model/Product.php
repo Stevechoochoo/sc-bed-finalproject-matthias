@@ -87,6 +87,22 @@ class Product implements JsonSerializable
         return $product;
     }
 
+    public static function save(Product $product): Product
+    {
+        $sql = 'INSERT INTO Products(serial_number, product_name, warranty) VALUES (:serialNumber, :productName, :warranty)';
+        $sth = self::$db->prepare($sql);
+        $sth->bindValue('serialNumber', $product->getSerialNumber());
+        $sth->bindValue('productName', $product->getProductName());
+        $sth->bindValue('warranty', $product->getWarranty());
+        $sth->execute();
+
+        if ($sth->rowCount() > 0) {
+            $product->setId(self::$db->lastInsertId());
+        }
+
+        return $product;
+    }
+
     public function jsonSerialize(): array
     {
         return get_object_vars($this);

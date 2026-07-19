@@ -151,6 +151,30 @@ $endpoints["product"] = function (string $requestMethod, array $requestData): vo
     }
 };
 
+$endpoints["admin-product"] = function (string $requestMethod, array $requestData): void {
+    if ($requestMethod !== 'POST') {
+        sendResponse(null, 405, 'Method not allowed.');
+        return;
+    }
+
+    if (!isset($requestData['api_user'], $requestData['api_token']) || !User::verifyAdmin($requestData['api_user'], $requestData['api_token'])) {
+        sendResponse(code: 403, error: 'Admin access required.');
+        return;
+    }
+
+    if (!isset($requestData['serial_number'], $requestData['product_name'], $requestData['warranty'])) {
+        sendResponse(code: 400, error: 'Missing product data.');
+        return;
+    }
+
+    $serialNumber = $requestData['serial_number'];
+    $productName = $requestData['product_name'];
+    $warranty = $requestData['warranty'];
+    $product = new Product(serialNumber: $serialNumber, productName: $productName, warranty: $warranty);
+    $product = Product::save($product);
+    sendResponse(data: $product, code: 201);
+};
+
 $endpoints["registered-products"] = function (string $requestMethod, array $requestData): void {
     if ($requestMethod !== 'GET') {
         sendResponse(null, 405, 'Method not allowed.');

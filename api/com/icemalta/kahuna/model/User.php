@@ -87,6 +87,18 @@ class User implements JsonSerializable
         return (bool) $sth->fetch(PDO::FETCH_OBJ);
     }
 
+    public static function verifyAdmin(int $userId, string $token): bool
+    {
+        self::$db = DBConnect::getInstance()->getConnection();
+        $sql = 'SELECT * FROM Users WHERE user_id = :id AND token = :token AND role = :role';
+        $sth = self::$db->prepare($sql);
+        $sth->bindValue('id', $userId);
+        $sth->bindValue('token', $token);
+        $sth->bindValue('role', 'admin');
+        $sth->execute();
+        return (bool) $sth->fetch(PDO::FETCH_OBJ);
+    }
+
     public static function deleteToken(User $user): bool
     {
         self::$db = DBConnect::getInstance()->getConnection();
