@@ -45,6 +45,12 @@ The database tables are defined in:
 db/db.sql
 ```
 
+A script to create one client user and one admin user is in:
+
+```text
+db/create-users.sql
+```
+
 ## API Usage
 
 Use `form-data` in Postman for `POST` requests.
