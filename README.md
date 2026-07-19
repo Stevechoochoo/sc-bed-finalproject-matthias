@@ -1,34 +1,192 @@
-# PHP & MariaDB Development Enviroment Tester
+# Kahuna Setup
 
-## Purpose
+## Requirements
 
-This simple app will help setup a working enviroment for your final project. It will also check that PHP is working, and that a connection to the MariaDB database server can be established. 
+- Docker Desktop
+- Postman or any other API client
+- Any browser
 
-## Usage
+## Running the Project
 
-1. Clone this repository.
-2. Ensure Docker Desktop is running.
-3. Open a terminal and change to the folder where you cloned this repository.
-4. Run the run.cmd script.  
-    4.1. On Windows, type **.\run.cmd**.    
-    4.2. On macOS or Linux, type: **./run.cmd**.
-5. Open [http://localhost:8001](https://localhost:8001) in your browser.
+1. Open Docker Desktop.
+2. Open a terminal in the project folder.
+3. Start the project:
 
-## Details
+```bash
+.\run.cmd
+```
 
-PHP has been setup as usual. A MariaDB server has also been created. Details follow:
+4. Open the client in your browser:
 
-- **Host**: mariadb
-- **Database Name:** kahuna
-- **User**: root
-- **Pass**: root
+```text
+http://localhost:8000
+```
 
-The services started include:
-- API Server on [http://localhost:8000](https://localhost:8000).
-- Client on [http://localhost:8001](https://localhost:8001).
+The API is available at:
 
-## Next Steps
+```text
+http://localhost:8000/kahuna/api
+```
 
-You can now start working on your final project.
+## Database
 
-1. It is safe to delete the contents of the **client** folder. 
+The project uses MariaDB.
+
+```text
+Host: mariadb
+Database: kahuna
+User: root
+Password: root
+```
+
+The database tables are defined in:
+
+```text
+db/db.sql
+```
+
+## API Usage
+
+Use `form-data` in Postman for `POST` requests.
+
+### Register User
+
+```text
+POST http://localhost:8000/kahuna/api/user
+```
+
+Body:
+
+```text
+name
+surname
+email
+password
+```
+
+### Login
+
+```text
+POST http://localhost:8000/kahuna/api/login
+```
+
+Body:
+
+```text
+email
+password
+```
+
+### Logout
+
+```text
+POST http://localhost:8000/kahuna/api/logout
+```
+
+Headers:
+
+```text
+X-Api-User
+X-Api-Key
+```
+
+### Register Product
+
+```text
+POST http://localhost:8000/kahuna/api/product
+```
+
+Headers:
+
+```text
+X-Api-User
+X-Api-Key
+```
+
+Body:
+
+```text
+serial_number
+purchase_date
+```
+
+Example serial number:
+
+```text
+KHWM8199911
+```
+
+### View Registered Products
+
+```text
+GET http://localhost:8000/kahuna/api/registered-products
+```
+
+Headers:
+
+```text
+X-Api-User
+X-Api-Key
+```
+
+### View One Registered Product
+
+```text
+GET http://localhost:8000/kahuna/api/registered-product
+```
+
+Headers:
+
+```text
+X-Api-User
+X-Api-Key
+```
+
+Params:
+
+```text
+serial_number
+```
+
+### Admin Add Product
+
+This endpoint only works for users with `role = 'admin'`.
+
+```text
+POST http://localhost:8000/kahuna/api/admin-product
+```
+
+Headers:
+
+```text
+X-Api-User
+X-Api-Key
+```
+
+Body:
+
+```text
+serial_number
+product_name
+warranty
+```
+
+To change a user to admin:
+
+```sql
+UPDATE Users
+SET role = 'admin'
+WHERE email = 'admin@email.com';
+```
+
+Then log in again.
+
+## Client Pages
+
+```text
+http://localhost:8000/register
+http://localhost:8000/login
+http://localhost:8000/product
+http://localhost:8000/products
+http://localhost:8000/product-details
+```
