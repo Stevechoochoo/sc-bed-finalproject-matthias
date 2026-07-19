@@ -49,6 +49,12 @@ db/db.sql
 
 Use `form-data` in Postman for `POST` requests.
 
+The Postman collection used for testing is in:
+
+```text
+api/Kahuna API.postman_collection.json
+```
+
 ### Register User
 
 ```text

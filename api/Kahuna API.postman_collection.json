@@ -1,0 +1,314 @@
+{
+  "info": {
+    "_postman_id": "d91016d6-6cde-47a9-9dda-a8d5d1ac420f",
+    "name": "Kahuna API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "52112594",
+    "_collection_link": "https://go.postman.co/collection/52112594-d91016d6-6cde-47a9-9dda-a8d5d1ac420f?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var responseBody = pm.response.json();",
+                  "pm.environment.set(\"user\", responseBody.data.user);",
+                  "pm.environment.set(\"token\", responseBody.data.token);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "email",
+                  "value": "admin@gmail.com",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "Admin123",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{BASE_URI}}/login",
+              "host": [
+                "{{BASE_URI}}"
+              ],
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{token}}",
+                "type": "text"
+              },
+              {
+                "key": "x-api-user",
+                "value": "{{user}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URI}}/logout",
+              "host": [
+                "{{BASE_URI}}"
+              ],
+              "path": [
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Admin_N",
+                  "type": "text",
+                  "uuid": "f9d87f7f-908b-4487-9fd4-50f52a456521"
+                },
+                {
+                  "key": "surname",
+                  "value": "Admin_S",
+                  "type": "text",
+                  "uuid": "0c9437f4-d909-409a-ba0e-fa85f25efd67"
+                },
+                {
+                  "key": "email",
+                  "value": "admin@gmail.com",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "Admin123",
+                  "type": "text"
+                },
+                {
+                  "key": "role",
+                  "value": "admin",
+                  "type": "text",
+                  "uuid": "3a58a471-78b1-481a-8a0a-9b90ba871079"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{BASE_URI}}/user",
+              "host": [
+                "{{BASE_URI}}"
+              ],
+              "path": [
+                "user"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Product",
+      "item": [
+        {
+          "name": "Register Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{token}}",
+                "type": "text"
+              },
+              {
+                "key": "x-api-user",
+                "value": "{{user}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "serial_number",
+                  "value": "KHWM8199911",
+                  "type": "text",
+                  "uuid": "ced427d5-9607-4143-a7d6-37916b1cdec5"
+                },
+                {
+                  "key": "purchase_date",
+                  "value": "2026-07-10",
+                  "type": "text",
+                  "uuid": "46063729-520a-4a91-8954-54dfdfe07012"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{BASE_URI}}/product",
+              "host": [
+                "{{BASE_URI}}"
+              ],
+              "path": [
+                "product"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Registered Products",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{token}}",
+                "type": "text"
+              },
+              {
+                "key": "x-api-user",
+                "value": "{{user}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URI}}/registered-products",
+              "host": [
+                "{{BASE_URI}}"
+              ],
+              "path": [
+                "registered-products"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Registered Product",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{token}}",
+                "type": "text"
+              },
+              {
+                "key": "x-api-user",
+                "value": "{{user}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URI}}/registered-product?serial_number=KHWM8199911",
+              "host": [
+                "{{BASE_URI}}"
+              ],
+              "path": [
+                "registered-product"
+              ],
+              "query": [
+                {
+                  "key": "serial_number",
+                  "value": "KHWM8199911"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Add Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{token}}",
+                "type": "text"
+              },
+              {
+                "key": "x-api-user",
+                "value": "{{user}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "serial_number",
+                  "value": "KHWMTEST123",
+                  "type": "text",
+                  "uuid": "8f8b1310-eca3-41ba-bdfe-30bf2cca6cbd"
+                },
+                {
+                  "key": "product_name",
+                  "value": "Test Product",
+                  "type": "text",
+                  "uuid": "8d0a90e4-dc1d-4a40-89c3-67913457d582"
+                },
+                {
+                  "key": "warranty",
+                  "value": "2",
+                  "type": "text",
+                  "uuid": "81c73803-570e-45c5-8f1a-4ffdc94f7d6d"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{BASE_URI}}/admin-product",
+              "host": [
+                "{{BASE_URI}}"
+              ],
+              "path": [
+                "admin-product"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
