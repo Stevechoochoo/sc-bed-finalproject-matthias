@@ -51,6 +51,13 @@ A script to create one client user and one admin user is in:
 db/create-users.sql
 ```
 
+Default test users:
+
+```text
+Client: client@kahuna.com / Client123
+Admin: admin@kahuna.com / Admin123
+```
+
 ## API Usage
 
 Use `form-data` in Postman for `POST` requests.
@@ -188,7 +195,7 @@ To change a user to admin:
 ```sql
 UPDATE Users
 SET role = 'admin'
-WHERE email = 'admin@email.com';
+WHERE email = 'admin@kahunatest.com';
 ```
 
 Then log in again.

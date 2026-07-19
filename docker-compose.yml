@@ -24,7 +24,8 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./support/db.sql:/docker-entrypoint-initdb.d/db.sql
+      - ./db/db.sql:/docker-entrypoint-initdb.d/01-db.sql
+      - ./db/create-users.sql:/docker-entrypoint-initdb.d/02-create-users.sql
       - db_data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mariadb-admin" , "-u", "root", "-proot", "ping", "-h", "localhost"]
